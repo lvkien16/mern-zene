@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 export default function Header() {
   return (
@@ -16,14 +17,14 @@ export default function Header() {
         </button>
       </div>
       <div className="flex gap-10 items-center">
-        <div className="avatar-togle flex items-center gap-2">
+        <Link to="/sign-up" className="avatar-togle flex items-center gap-2">
           <img
             src="https://static.vecteezy.com/system/resources/previews/008/442/086/original/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"
             alt=""
             className="w-10 h-10 rounded-full bg-secondary border-primary"
           />
           <span className="text-primary font-semibold">John Doe</span>
-        </div>
+        </Link>
       </div>
     </div>
   );
