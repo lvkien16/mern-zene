@@ -1,12 +1,18 @@
 import { useState } from "react";
 import { FaGoogle } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from "../redux/user/userSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function SignIn() {
   const [formData, setFormData] = useState({});
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { loading, error } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -14,13 +20,13 @@ export default function SignIn() {
 
   const handleSignIn = async (e) => {
     e.preventDefault();
+
     if (!formData.email || !formData.password) {
-      return setError("Please fill in all fields");
+      return dispatch(signInFailure("All fields are required"));
     }
 
     try {
-      setLoading(true);
-      setError("");
+      dispatch(signInStart());
       const res = await fetch("/api/auth/signin", {
         method: "POST",
         headers: {
@@ -29,18 +35,15 @@ export default function SignIn() {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      if (!res.ok) {
-        setError(data.message);
-        return setLoading(false);
+      if (data.success === false) {
+        return dispatch(signInFailure(data.message));
       }
-      setLoading(false);
-      setError("");
-      setFormData({});
-      navigate("/");
+      if (res.ok) {
+        dispatch(signInSuccess(data));
+        navigate("/");
+      }
     } catch (error) {
-      setLoading(false);
-      setError("An error occurred. Please try again");
-      console.log(error);
+      dispatch(signInFailure(error.message));
     }
   };
   return (
