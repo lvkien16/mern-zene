@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { FaGoogle } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
+import OAuth from "../components/OAuth";
 
 export default function SignUp() {
   const [formData, setFormData] = useState({});
@@ -128,12 +128,7 @@ export default function SignUp() {
           >
             {loading ? "Loading..." : "Sign Up"}
           </button>
-          <button
-            type="button"
-            className="flex justify-center items-center gap-2 bg-primary text-secondary border hover:bg-transparent hover:text-primary border-primary w-full py-2 rounded-lg font-semibold focus:outline-none"
-          >
-            <FaGoogle /> Continue with Google
-          </button>
+          <OAuth />
         </form>
       </div>
     </div>

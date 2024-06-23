@@ -21,10 +21,12 @@ function MainApp() {
   return (
     <div className="">
       {isAuth ? (
-        <Routes>
-          <Route path="/sign-in" element={<SignIn />} />
-          <Route path="/sign-up" element={<SignUp />} />
-        </Routes>
+        <div className="flex justify-center items-center">
+          <Routes>
+            <Route path="/sign-in" element={<SignIn />} />
+            <Route path="/sign-up" element={<SignUp />} />
+          </Routes>
+        </div>
       ) : (
         <>
           <div className="px-4 bg-secondary">

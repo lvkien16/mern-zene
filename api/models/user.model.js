@@ -16,7 +16,8 @@ const userSchema = new mongoose.Schema(
     },
     profilePicture: {
       type: String,
-      default: "",
+      default:
+        "https://www.pngall.com/wp-content/uploads/5/Profile-PNG-Images.png",
     },
     birthday: {
       type: Date,
