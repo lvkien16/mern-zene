@@ -9,6 +9,7 @@ import Header from "./components/Header";
 import Followers from "./components/Followers";
 import Conversations from "./components/Conversations";
 import { useEffect } from "react";
+import PrivateRoute from "./components/PrivateRoute";
 
 function MainApp() {
   const location = useLocation();
@@ -37,10 +38,12 @@ function MainApp() {
             </div>
             <div className="w-6/12 mx-2 bg-secondary rounded-lg">
               <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/message" element={<Message />} />
-                <Route path="/admin/dashboard" element={<Dashboard />} />
-                <Route path="/profile" element={<Profile />} />
+                <Route element={<PrivateRoute />}>
+                  <Route path="/admin/dashboard" element={<Dashboard />} />
+                  <Route path="/" element={<Home />} />
+                  <Route path="/message" element={<Message />} />
+                  <Route path="/profile" element={<Profile />} />
+                </Route>
               </Routes>
             </div>
             <div className="w-3/12 pl-2">
