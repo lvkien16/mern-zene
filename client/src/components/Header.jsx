@@ -1,7 +1,10 @@
-import React from "react";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Avatar, Dropdown } from "flowbite-react";
 
 export default function Header() {
+  const { currentUser } = useSelector((state) => state.user);
+  console.log(currentUser);
   return (
     <div className="flex items-center justify-between py-3 mb-4">
       <div className="logo">ZENE</div>
@@ -17,14 +20,38 @@ export default function Header() {
         </button>
       </div>
       <div className="flex gap-10 items-center">
-        <Link to="/sign-up" className="avatar-togle flex items-center gap-2">
-          <img
-            src="https://static.vecteezy.com/system/resources/previews/008/442/086/original/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"
-            alt=""
-            className="w-10 h-10 rounded-full bg-secondary border-primary"
-          />
-          <span className="text-primary font-semibold">John Doe</span>
-        </Link>
+        {currentUser ? (
+          <Dropdown
+            arrowIcon={false}
+            inline
+            label={
+              <div className="flex gap-2 items-center">
+                <Avatar alt="user" img={currentUser.profilePicture} rounded />
+                <span className="font-semibold text-primary">
+                  {currentUser.name}
+                </span>
+              </div>
+            }
+            className="bg-secondary text-primary"
+          >
+            <Dropdown.Header>
+              <span className="font-semibold">{currentUser.name}</span>
+            </Dropdown.Header>
+            <Dropdown.Item className="hover:bg-primary hover:text-secondary">
+              <Link to="/profile">Profile</Link>
+            </Dropdown.Item>
+
+            <Dropdown.Divider />
+
+            <Dropdown.Item className="hover:bg-primary hover:text-secondary">
+              <button type="button">Sign out</button>
+            </Dropdown.Item>
+          </Dropdown>
+        ) : (
+          <Link to="/sign-in" className="text-primary font-semibold">
+            Sign In
+          </Link>
+        )}
       </div>
     </div>
   );

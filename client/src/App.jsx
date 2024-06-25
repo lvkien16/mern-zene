@@ -8,7 +8,6 @@ import SignUp from "./pages/SignUp";
 import Header from "./components/Header";
 import Followers from "./components/Followers";
 import Conversations from "./components/Conversations";
-import Navbar from "./components/Navbar";
 import { useEffect } from "react";
 
 function MainApp() {
@@ -37,9 +36,6 @@ function MainApp() {
               <Conversations />
             </div>
             <div className="w-6/12 mx-2 bg-secondary rounded-lg">
-              <div className="border-b border-primary">
-                <Navbar />
-              </div>
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/message" element={<Message />} />
