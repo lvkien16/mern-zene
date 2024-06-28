@@ -1,5 +1,13 @@
-import React from "react";
+import Informations from "../components/profile/Informations";
+import Posts from "../components/profile/Posts";
+import { useParams } from "react-router-dom";
 
 export default function Profile() {
-  return <div>Profile</div>;
+  const { userId } = useParams();
+  return (
+    <div className="p-2">
+      <Informations userId={userId} />
+      <Posts userId={userId} />
+    </div>
+  );
 }

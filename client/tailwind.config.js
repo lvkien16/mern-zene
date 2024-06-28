@@ -1,14 +1,18 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+    "node_modules/flowbite-react/**/*.js",
+  ],
   theme: {
     extend: {
       colors: {
         primary: "#EE4C7C",
         secondary: "#E3E2DF",
       },
-      margin: {
-        Header: "65.5px",
+      height: {
+        "screen-65.5px": "calc(100vh - 65.5px)",
       },
     },
   },

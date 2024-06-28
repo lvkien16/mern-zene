@@ -6,10 +6,11 @@ import Profile from "./pages/Profile";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Header from "./components/Header";
-import Followers from "./components/Followers";
+import Notifications from "./components/Notifications";
 import Conversations from "./components/Conversations";
 import { useEffect } from "react";
 import PrivateRoute from "./components/PrivateRoute";
+import Post from "./pages/Post";
 
 function MainApp() {
   const location = useLocation();
@@ -33,21 +34,22 @@ function MainApp() {
             <Header />
           </div>
           <div className="flex px-4">
-            <div className="w-3/12 pr-2">
+            <div className="md:w-3/12 pr-2 hidden md:block">
               <Conversations />
             </div>
-            <div className="w-6/12 mx-2 bg-secondary rounded-lg">
+            <div className="md:w-6/12 w-full mx-2 bg-secondary rounded-md ">
               <Routes>
                 <Route element={<PrivateRoute />}>
                   <Route path="/admin/dashboard" element={<Dashboard />} />
                   <Route path="/" element={<Home />} />
                   <Route path="/message" element={<Message />} />
-                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/profile/:userId" element={<Profile />} />
+                  <Route path="/post/:postId" element={<Post />} />
                 </Route>
               </Routes>
             </div>
-            <div className="w-3/12 pl-2">
-              <Followers />
+            <div className="md:w-3/12 pl-2 hidden md:block">
+              <Notifications />
             </div>
           </div>
         </>

@@ -1,13 +1,32 @@
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Avatar, Dropdown } from "flowbite-react";
+import { signOutSuccess } from "../redux/user/userSlice";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
-  console.log(currentUser);
+  const dispatch = useDispatch();
+
+  const handleSignout = async () => {
+    try {
+      const res = await fetch("/api/user/signout", {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        console.log(data.message);
+      } else {
+        dispatch(signOutSuccess());
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className="flex items-center justify-between py-3 mb-4">
-      <div className="logo">ZENE</div>
+      <Link to="/" className="logo">
+        ZENE
+      </Link>
       <div className="search flex gap-2">
         <input
           type="text"
@@ -15,7 +34,7 @@ export default function Header() {
           className="border outline-none border-primary rounded-md p-2 w-96 text-primary bg-secondary"
           placeholder="Search..."
         />
-        <button className="border-2 border-primary hover:bg-transparent hover:text-primary px-3 rounded bg-primary text-secondary">
+        <button className="border border-primary hover:bg-transparent hover:text-primary px-3 rounded bg-primary text-secondary">
           Search
         </button>
       </div>
@@ -35,16 +54,25 @@ export default function Header() {
             className="bg-secondary text-primary"
           >
             <Dropdown.Header>
-              <span className="font-semibold">{currentUser.name}</span>
+              <p className="font-semibold w-full text-center">
+                {currentUser.name}
+              </p>
             </Dropdown.Header>
-            <Dropdown.Item className="hover:bg-primary hover:text-secondary">
-              <Link to="/profile">Profile</Link>
+            <Dropdown.Item className="p-0">
+              <Link
+                to={`/profile/${currentUser._id}`}
+                as="div"
+                className="w-full h-full hover:bg-primary hover:text-secondary py-2"
+              >
+                Profile
+              </Link>
             </Dropdown.Item>
 
             <Dropdown.Divider />
-
-            <Dropdown.Item className="hover:bg-primary hover:text-secondary">
-              <button type="button">Sign out</button>
+            <Dropdown.Item onClick={handleSignout} className="p-0">
+              <p className=" w-full text-center hover:bg-primary hover:text-secondary py-2">
+                Sign out
+              </p>
             </Dropdown.Item>
           </Dropdown>
         ) : (

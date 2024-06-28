@@ -1,7 +1,7 @@
-import { CiCirclePlus } from "react-icons/ci";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import CreatePost from "../components/home/CreatePost";
 
 export default function Home() {
   const settings = {
@@ -17,10 +17,7 @@ export default function Home() {
     <div className="container mx-auto px-4">
       <div className="flex justify-center mt-4">
         <div className="create-a-post py-2 w-full">
-          <button className="flex items-center justify-center gap-2 bg-primary text-secondary border hover:bg-transparent hover:text-primary border-primary w-full py-2 rounded-lg font-semibold focus:outline-none">
-            <CiCirclePlus className="text-3xl" />
-            Create a post
-          </button>
+          <CreatePost />
         </div>
       </div>
       <div className="newsfeed mt-6">
