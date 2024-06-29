@@ -42,7 +42,7 @@ export default function LikeComment({ comment }) {
           className="text-primary hover:cursor-pointer"
         />
       )}
-      <span>{likes.length}</span>
+      <span className="text-primary">{likes.length}</span>
     </>
   );
 }

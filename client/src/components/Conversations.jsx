@@ -1,9 +1,27 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { IoMdSearch } from "react-icons/io";
+import { useSelector } from "react-redux";
 
 export default function Conversations() {
+  const [conversations, setConversations] = useState([]);
+  const { currentUser } = useSelector((state) => state.user);
+
+  useEffect(() => {
+    const getCoversations = async () => {
+      try {
+        const res = await fetch(
+          `/api/conversation/getconversations/${currentUser._id}`
+        );
+        const data = await res.json();
+        setConversations(data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getCoversations();
+  }, [currentUser._id]);
   return (
-    <div className=" bg-secondary h-screen rounded-lg px-2">
+    <div className=" bg-secondary rounded-lg px-2">
       <div className="title py-2 text-center border-b border-primary">
         <h3 className="font-semibold text-primary">Conversations</h3>
       </div>
@@ -18,50 +36,21 @@ export default function Conversations() {
         </button>
       </div>
       <div className="conversations mt-2">
-        <div className="conversation flex items-center gap-2 p-2 border-b border-primary bg-primary rounded-lg">
-          <img
-            src="https://static.vecteezy.com/system/resources/previews/008/442/086/original/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"
-            alt=""
-            className="w-10 h-10 rounded-full"
-          />
-          <div>
-            <h4 className="text-secondary font-semibold">John Doe</h4>
-            <p className="text-secondary">Hello, how are you?</p>
+        {conversations && conversations.length > 0 ? (
+          <div className="conversation flex items-center gap-2 p-2 border-b border-primary bg-primary rounded-lg">
+            <img
+              src="https://static.vecteezy.com/system/resources/previews/008/442/086/original/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"
+              alt=""
+              className="w-10 h-10 rounded-full"
+            />
+            <div>
+              <h4 className="text-secondary font-semibold">John Doe</h4>
+              <p className="text-secondary">Hello, how are you?</p>
+            </div>
           </div>
-        </div>
-        <div className="conversation flex items-center gap-2 p-2 border-b border-primary">
-          <img
-            src="https://static.vecteezy.com/system/resources/previews/008/442/086/original/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"
-            alt=""
-            className="w-10 h-10 rounded-full"
-          />
-          <div>
-            <h4 className="text-primary font-semibold">Jane Doe</h4>
-            <p className="text-primary">Hello, how are you?</p>
-          </div>
-        </div>
-        <div className="conversation flex items-center gap-2 p-2 border-b border-primary">
-          <img
-            src="https://static.vecteezy.com/system/resources/previews/008/442/086/original/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"
-            alt=""
-            className="w-10 h-10 rounded-full"
-          />
-          <div>
-            <h4 className="text-primary font-semibold">John Doe</h4>
-            <p className="text-primary">Hello, how are you?</p>
-          </div>
-        </div>
-        <div className="conversation flex items-center gap-2 p-2 border-b border-primary">
-          <img
-            src="https://static.vecteezy.com/system/resources/previews/008/442/086/original/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"
-            alt=""
-            className="w-10 h-10 rounded-full"
-          />
-          <div>
-            <h4 className="text-primary font-semibold">Jane Doe</h4>
-            <p className="text-primary">Hello, how are you?</p>
-          </div>
-        </div>
+        ) : (
+          <p className="text-primary text-center">No Conversations</p>
+        )}
       </div>
     </div>
   );

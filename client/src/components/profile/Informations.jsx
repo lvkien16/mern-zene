@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 export default function Informations({ userId }) {
   const { currentUser } = useSelector((state) => state.user);
@@ -62,9 +63,12 @@ export default function Informations({ userId }) {
             <button className="border bg-primary text-secondary px-2 py-1 hover:bg-transparent hover:text-primary border-primary rounded-lg">
               Follow
             </button>
-            <button className="border bg-primary text-secondary px-2 py-1 hover:bg-transparent hover:text-primary border-primary rounded-lg">
+            <Link
+              to={`/message/${user._id}`}
+              className="border bg-primary text-secondary px-2 py-1 hover:bg-transparent hover:text-primary border-primary rounded-lg"
+            >
               Message
-            </button>
+            </Link>
           </>
         )}
       </div>

@@ -12,7 +12,11 @@ export default {
         secondary: "#E3E2DF",
       },
       height: {
-        "screen-65.5px": "calc(100vh - 65.5px)",
+        "screen-header": "calc(100vh - (65.5px + 17px))",
+        "screen-64px-header": "calc(100vh - (60px + 64px + 65.5px + 17px))",
+      },
+      maxWidth: {
+        "2/3": "calc(100% / 3 * 2)",
       },
     },
   },

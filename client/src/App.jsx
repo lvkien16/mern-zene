@@ -37,12 +37,12 @@ function MainApp() {
             <div className="md:w-3/12 pr-2 hidden md:block">
               <Conversations />
             </div>
-            <div className="md:w-6/12 w-full mx-2 bg-secondary rounded-md ">
+            <div className="md:w-6/12 w-full mx-2 bg-secondary rounded-md h-screen-header overflow-y-auto">
               <Routes>
                 <Route element={<PrivateRoute />}>
                   <Route path="/admin/dashboard" element={<Dashboard />} />
                   <Route path="/" element={<Home />} />
-                  <Route path="/message" element={<Message />} />
+                  <Route path="/message/:userId" element={<Message />} />
                   <Route path="/profile/:userId" element={<Profile />} />
                   <Route path="/post/:postId" element={<Post />} />
                 </Route>

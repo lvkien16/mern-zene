@@ -106,7 +106,7 @@ export default function Post() {
                   <img
                     src={image}
                     alt=""
-                    className="w-full h-80 sm:h-96 lg:h-80 object-cover"
+                    className="w-full h-80 sm:h-96 object-cover"
                   />
                   <span className="absolute top-0 right-0 px-2 bg-gray-100 text-primary border-l border-b border-secondary font-semibold">
                     {index + 1}/{post.images.length}
@@ -145,11 +145,10 @@ export default function Post() {
       </div>
       <div className="mt-4 ">
         {comments.map((comment) => (
-          <div
-            key={comment._id}
-            className="comment flex-shrink-0 flex mb-5 gap-2"
-          >
-            <Comment comment={comment} />
+          <div key={comment._id}>
+            <div className="comment flex-shrink-0 flex mb-5 gap-2">
+              <Comment comment={comment} />
+            </div>
           </div>
         ))}
       </div>
