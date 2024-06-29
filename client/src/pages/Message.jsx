@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { IoMdSend } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import io from "socket.io-client";
+
+const socket = io("http://localhost:3000");
 
 export default function Message() {
   const { currentUser } = useSelector((state) => state.user);
@@ -42,6 +45,15 @@ export default function Message() {
     };
     getUser();
   }, [userId]);
+
+  useEffect(() => {
+    socket.on("message", (data) => {
+      setMessages([...messages, data]);
+    });
+    return () => {
+      socket.off("message");
+    };
+  }, [messages]);
 
   useEffect(() => {
     const getConversationAndMessages = async () => {

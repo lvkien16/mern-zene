@@ -16,6 +16,7 @@ export const createConversation = async (req, res, next) => {
       return res.status(200).json(conversation);
     } else {
       const savedConversation = await newConversation.save();
+
       res.status(201).json(savedConversation);
     }
   } catch (error) {

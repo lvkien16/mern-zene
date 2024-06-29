@@ -35,7 +35,9 @@ function MainApp() {
           </div>
           <div className="flex px-4">
             <div className="md:w-3/12 pr-2 hidden md:block">
-              <Conversations />
+              <PrivateRoute>
+                <Conversations />
+              </PrivateRoute>
             </div>
             <div className="md:w-6/12 w-full mx-2 bg-secondary rounded-md h-screen-header overflow-y-auto">
               <Routes>
@@ -49,7 +51,9 @@ function MainApp() {
               </Routes>
             </div>
             <div className="md:w-3/12 pl-2 hidden md:block">
-              <Notifications />
+              <PrivateRoute>
+                <Notifications />
+              </PrivateRoute>
             </div>
           </div>
         </>

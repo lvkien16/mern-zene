@@ -9,6 +9,8 @@ export const sendMessage = async (req, res, next) => {
   });
   try {
     const savedMessage = await newMessage.save();
+    const io = req.app.get("socketio");
+    io.emit("message", savedMessage);
     res.status(201).json(savedMessage);
   } catch (error) {
     next(error);
@@ -19,7 +21,7 @@ export const getMessages = async (req, res, next) => {
   try {
     const messages = await Message.find({
       conversationId: req.params.conversationId,
-    }).sort({ createdAt: -1 });
+    }).sort({ createdAt: 1 });
     res.status(200).json(messages);
   } catch (error) {
     next(error);

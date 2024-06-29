@@ -8,6 +8,10 @@ import postRouter from "./routes/post.route.js";
 import commentRouter from "./routes/comment.route.js";
 import conversationRouter from "./routes/conversation.route.js";
 import messageRouter from "./routes/message.route.js";
+import http from "http";
+import { Server } from "socket.io";
+import cors from "cors";
+import { onConnection } from "./socket/socket.js";
 
 dotenv.config();
 
@@ -21,11 +25,31 @@ mongoose
   });
 
 const app = express();
+const server = http.createServer(app);
 
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"],
+  },
+});
+
+app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 
-app.listen(3000, () => {
+app.set("socketio", io);
+
+io.on("connection", (socket) => {
+  console.log("Connected");
+  onConnection(socket, io);
+
+  socket.on("disconnect", () => {
+    console.log("Disconnected");
+  });
+});
+
+server.listen(3000, () => {
   console.log("Server is running on port 3000!!");
 });
 
