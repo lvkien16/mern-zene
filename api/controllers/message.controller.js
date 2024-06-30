@@ -3,14 +3,17 @@ import { errorHandler } from "./../utils/error.js";
 
 export const sendMessage = async (req, res, next) => {
   const newMessage = new Message({
-    conversationId: req.params.conversationId,
-    senderId: req.body.senderId,
-    content: req.body.content,
+    sender: req.user.id,
+    receiver: req.params.receiver,
+    text: req.body.text,
+    images: req.body.images,
+    videos: req.body.videos,
   });
   try {
     const savedMessage = await newMessage.save();
     const io = req.app.get("socketio");
     io.emit("message", savedMessage);
+    io.emit("conversation", savedMessage);
     res.status(201).json(savedMessage);
   } catch (error) {
     next(error);
@@ -20,9 +23,52 @@ export const sendMessage = async (req, res, next) => {
 export const getMessages = async (req, res, next) => {
   try {
     const messages = await Message.find({
-      conversationId: req.params.conversationId,
+      $or: [
+        { sender: req.user.id, receiver: req.params.userId },
+        { sender: req.params.userId, receiver: req.user.id },
+      ],
     }).sort({ createdAt: 1 });
     res.status(200).json(messages);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getConversations = async (req, res, next) => {
+  try {
+    const userId = req.params.userId;
+    const conversations = await Message.aggregate([
+      {
+        $match: {
+          $or: [{ sender: userId }, { receiver: userId }],
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $cond: [
+              { $gt: ["$sender", "$receiver"] },
+              { sender: "$receiver", receiver: "$sender" },
+              { sender: "$sender", receiver: "$receiver" },
+            ],
+          },
+          lastMessage: { $last: "$$ROOT" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          sender: "$_id.sender",
+          receiver: "$_id.receiver",
+          lastMessage: 1,
+        },
+      },
+      {
+        $sort: { "lastMessage.createdAt": -1 },
+      },
+    ]);
+
+    res.status(200).json(conversations);
   } catch (error) {
     next(error);
   }

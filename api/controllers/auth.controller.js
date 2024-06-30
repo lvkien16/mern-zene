@@ -49,6 +49,8 @@ export const signIn = async (req, res, next) => {
       expiresIn: "10h",
     });
 
+    localStorage.setItem("access_token", token);
+
     const { password: pass, ...rest } = validUser._doc;
 
     res
@@ -56,7 +58,7 @@ export const signIn = async (req, res, next) => {
       .cookie("access_token", token, {
         httpOnly: true,
       })
-      .json(rest);
+      .json({ access_token: token, ...rest });
   } catch (error) {
     next(error);
   }
@@ -74,7 +76,7 @@ export const google = async (req, res, next) => {
       res
         .status(200)
         .cookie("access_token", token, { httpOnly: true })
-        .json(rest);
+        .json({ access_token: token, ...rest });
     } else {
       const generatedPassword = Math.random().toString(36).slice(-8);
       const hashPassword = await bcryptjs.hash(generatedPassword, 10);
@@ -86,13 +88,13 @@ export const google = async (req, res, next) => {
       });
       await newUser.save();
       const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
-        expiresIn: "1h",
+        expiresIn: "10h",
       });
       const { password: pass, ...rest } = newUser._doc;
       res
         .status(200)
         .cookie("access_token", token, { httpOnly: true })
-        .json(rest);
+        .json({ access_token: token, ...rest });
     }
   } catch (error) {
     next(error);

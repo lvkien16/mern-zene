@@ -11,11 +11,21 @@ import Conversations from "./components/Conversations";
 import { useEffect } from "react";
 import PrivateRoute from "./components/PrivateRoute";
 import Post from "./pages/Post";
+import { useSelector } from "react-redux";
 
 function MainApp() {
   const location = useLocation();
   const isAuth =
     location.pathname === "/sign-in" || location.pathname === "/sign-up";
+  const { currentUser } = useSelector((state) => state.user);
+  if (location.pathname.startsWith("/message/")) {
+    localStorage.setItem(
+      "userIdForConversation",
+      location.pathname.split("/")[2]
+    );
+  } else {
+    localStorage.removeItem("userIdForConversation");
+  }
 
   useEffect(() => {}, [location.pathname]);
 
@@ -35,9 +45,7 @@ function MainApp() {
           </div>
           <div className="flex px-4">
             <div className="md:w-3/12 pr-2 hidden md:block">
-              <PrivateRoute>
-                <Conversations />
-              </PrivateRoute>
+              {currentUser && <Conversations />}
             </div>
             <div className="md:w-6/12 w-full mx-2 bg-secondary rounded-md h-screen-header overflow-y-auto">
               <Routes>
@@ -51,9 +59,7 @@ function MainApp() {
               </Routes>
             </div>
             <div className="md:w-3/12 pl-2 hidden md:block">
-              <PrivateRoute>
-                <Notifications />
-              </PrivateRoute>
+              {currentUser && <Notifications />}
             </div>
           </div>
         </>

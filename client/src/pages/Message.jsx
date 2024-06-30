@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { IoMdSend } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import io from "socket.io-client";
+import SendMessage from "../components/message/SendMessage";
 
 const socket = io("http://localhost:3000");
 
@@ -10,9 +10,7 @@ export default function Message() {
   const { currentUser } = useSelector((state) => state.user);
   const { userId } = useParams();
   const [user, setUser] = useState({});
-  const [messageContent, setMessageContent] = useState("");
   const [messages, setMessages] = useState([]);
-  const [conversation, setConversation] = useState(null);
   const [elementWidth, setElementWidth] = useState(0);
   const bottomRef = useRef(null);
   const elementRef = useRef(null);
@@ -56,55 +54,21 @@ export default function Message() {
   }, [messages]);
 
   useEffect(() => {
-    const getConversationAndMessages = async () => {
+    const getMessages = async () => {
       try {
-        let res = await fetch(`/api/conversation/getconversation/${userId}`);
-        let data = await res.json();
-        if (!data) {
-          res = await fetch(`/api/conversation/create/${userId}`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              members: [userId],
-            }),
-          });
-          data = await res.json();
-        }
-        setConversation(data);
-        res = await fetch(`/api/message/get/${data._id}`);
-        const messagesData = await res.json();
-        setMessages(messagesData);
+        const res = await fetch(`/api/message/get/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        });
+        const data = await res.json();
+        setMessages(data);
       } catch (error) {
         console.log(error);
       }
     };
-    getConversationAndMessages();
+    getMessages();
   }, [userId]);
-
-  const handleSendMessage = async (e) => {
-    e.preventDefault();
-    if (!messageContent.trim()) return;
-
-    try {
-      const res = await fetch(`/api/message/send/${conversation._id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          content: messageContent,
-          senderId: currentUser._id,
-        }),
-      });
-      const data = await res.json();
-      setMessages([...messages, data]);
-      setMessageContent("");
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   return (
     <>
@@ -124,13 +88,13 @@ export default function Message() {
                 <div key={message._id}>
                   <div
                     className={`flex gap-2 mb-3 ${
-                      message.senderId === currentUser._id ? "justify-end" : ""
+                      message.sender === currentUser._id ? "justify-end" : ""
                     }`}
                   >
-                    {message.senderId === currentUser._id ? (
+                    {message.sender === currentUser._id ? (
                       <>
                         <div className="bg-primary p-2 rounded-lg max-w-2/3">
-                          <p className="text-white">{message.content}</p>
+                          <p className="text-white">{message.text}</p>
                         </div>
                         <img
                           src={currentUser.profilePicture}
@@ -146,7 +110,7 @@ export default function Message() {
                           className="w-8 h-8 rounded-full"
                         />
                         <div className="bg-white p-2 rounded-lg max-w-2/3">
-                          <p className="text-primary">{message.content}</p>
+                          <p className="text-primary">{message.text}</p>
                         </div>
                       </>
                     )}
@@ -163,24 +127,11 @@ export default function Message() {
           className="p-2 fixed bottom-0 bg-secondary w-full"
           style={{ width: elementWidth }}
         >
-          <form className="flex gap-3" onSubmit={handleSendMessage}>
-            <textarea
-              rows={1}
-              type="text"
-              name="content"
-              value={messageContent}
-              onChange={(e) => setMessageContent(e.target.value)}
-              className="border border-primary outline-none text-primary p-2 rounded-full w-full resize-none"
-              placeholder="Type a message"
-              required
-            />
-            <button
-              type="submit"
-              className="bg-primary text-white px-5 rounded-md hover:bg-white hover:text-primary border border-primary"
-            >
-              <IoMdSend />
-            </button>
-          </form>
+          <SendMessage
+            userId={userId}
+            messages={messages}
+            setMessages={setMessages}
+          />
         </div>
       </div>
     </>

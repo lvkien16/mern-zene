@@ -1,11 +1,15 @@
 import express from "express";
-import Message from "../models/message.model.js";
 import { verifyToken } from "./../utils/verifyUser.js";
-import { getMessages, sendMessage } from "../controllers/message.controller.js";
+import {
+  getConversations,
+  getMessages,
+  sendMessage,
+} from "../controllers/message.controller.js";
 
 const router = express.Router();
 
-router.post("/send/:conversationId", sendMessage);
-router.get("/get/:conversationId", verifyToken, getMessages);
+router.post("/send/:receiver", verifyToken, sendMessage);
+router.get("/get/:userId", verifyToken, getMessages);
+router.get("/get/conversations/:userId", verifyToken, getConversations);
 
 export default router;

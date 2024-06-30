@@ -6,10 +6,6 @@ const conversationSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
-    isGroup: {
-      type: Boolean,
-      default: false,
-    },
   },
   { timestamps: true }
 );

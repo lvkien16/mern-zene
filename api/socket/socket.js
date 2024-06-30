@@ -4,12 +4,15 @@ export const onConnection = (socket, io) => {
   socket.on("message", async (data) => {
     try {
       const message = new Message({
-        conversationId: data.conversationId,
-        senderId: data.senderId,
-        content: data.content,
+        sender: req.user.id,
+        receiver: req.params.receiver,
+        text: data.text,
+        images: data.images,
+        videos: data.videos,
       });
       await message.save();
       io.emit("message", message);
+      io.emit("conversation", message);
     } catch (err) {
       console.log(err);
     }

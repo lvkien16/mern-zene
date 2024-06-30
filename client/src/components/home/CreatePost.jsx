@@ -87,10 +87,12 @@ export default function CreatePost() {
       return;
     }
     try {
+      const token = localStorage.getItem("access_token");
       const res = await fetch("/api/post/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
       });

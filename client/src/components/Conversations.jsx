@@ -1,16 +1,43 @@
 import { useEffect, useState } from "react";
 import { IoMdSearch } from "react-icons/io";
 import { useSelector } from "react-redux";
+import User from "./conversation/User";
+import { Link, useLocation } from "react-router-dom";
+import io from "socket.io-client";
+
+const socket = io("http://localhost:3000");
 
 export default function Conversations() {
   const [conversations, setConversations] = useState([]);
   const { currentUser } = useSelector((state) => state.user);
+  const [userId, setUserId] = useState(
+    localStorage.getItem("userIdForConversation") || ""
+  );
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname.startsWith("/message/")) {
+      localStorage.setItem(
+        "userIdForConversation",
+        location.pathname.split("/")[2]
+      );
+      setUserId(location.pathname.split("/")[2]);
+    } else {
+      localStorage.removeItem("userIdForConversation");
+      setUserId("");
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     const getCoversations = async () => {
       try {
         const res = await fetch(
-          `/api/conversation/getconversations/${currentUser._id}`
+          `/api/message/get/conversations/${currentUser._id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+          }
         );
         const data = await res.json();
         setConversations(data);
@@ -19,7 +46,27 @@ export default function Conversations() {
       }
     };
     getCoversations();
-  }, [currentUser._id]);
+  }, [currentUser._id, userId]);
+
+  useEffect(() => {
+    socket.on("conversation", (data) => {
+      setConversations((prev) => {
+        const index = prev.findIndex(
+          (conversation) => conversation.receiver === data.receiver
+        );
+        if (index !== -1) {
+          prev[index] = data;
+          return [...prev];
+        } else {
+          return [data, ...prev];
+        }
+      });
+    });
+    return () => {
+      socket.off("conversation");
+    };
+  }, [conversations, userId]);
+
   return (
     <div className=" bg-secondary rounded-lg px-2">
       <div className="title py-2 text-center border-b border-primary">
@@ -37,17 +84,15 @@ export default function Conversations() {
       </div>
       <div className="conversations mt-2">
         {conversations && conversations.length > 0 ? (
-          <div className="conversation flex items-center gap-2 p-2 border-b border-primary bg-primary rounded-lg">
-            <img
-              src="https://static.vecteezy.com/system/resources/previews/008/442/086/original/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"
-              alt=""
-              className="w-10 h-10 rounded-full"
-            />
-            <div>
-              <h4 className="text-secondary font-semibold">John Doe</h4>
-              <p className="text-secondary">Hello, how are you?</p>
-            </div>
-          </div>
+          conversations.map((conversation, index) => (
+            <Link
+              to={`/message/${conversation.receiver}`}
+              onClick={() => setUserId(conversation.receiver)}
+              key={index}
+            >
+              <User conversation={conversation} userId={userId} />
+            </Link>
+          ))
         ) : (
           <p className="text-primary text-center">No Conversations</p>
         )}

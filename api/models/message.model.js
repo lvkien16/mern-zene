@@ -2,21 +2,32 @@ import mongoose from "mongoose";
 
 const messageSchema = new mongoose.Schema(
   {
-    conversationId: {
+    sender: {
       type: String,
       required: true,
     },
-    senderId: {
+    receiver: {
       type: String,
       required: true,
     },
-    content: {
+    text: {
       type: String,
-      required: true,
+    },
+    images: {
+      type: Array,
+      default: [],
+    },
+    videos: {
+      type: Array,
+      default: [],
     },
     read: {
       type: Boolean,
       default: false,
+    },
+    hidden: {
+      type: Array,
+      default: [],
     },
   },
   { timestamps: true }
