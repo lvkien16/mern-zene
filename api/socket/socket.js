@@ -12,7 +12,6 @@ export const onConnection = (socket, io) => {
       });
       await message.save();
       io.emit("message", message);
-      io.emit("conversation", message);
     } catch (err) {
       console.log(err);
     }

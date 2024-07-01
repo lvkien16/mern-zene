@@ -14,6 +14,7 @@ export default function Conversations() {
     localStorage.getItem("userIdForConversation") || ""
   );
   const location = useLocation();
+  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     if (location.pathname.startsWith("/message/")) {
@@ -46,26 +47,30 @@ export default function Conversations() {
       }
     };
     getCoversations();
-  }, [currentUser._id, userId]);
+  }, [currentUser._id, userId, messages]);
 
   useEffect(() => {
-    socket.on("conversation", (data) => {
-      setConversations((prev) => {
-        const index = prev.findIndex(
-          (conversation) => conversation.receiver === data.receiver
-        );
-        if (index !== -1) {
-          prev[index] = data;
-          return [...prev];
-        } else {
-          return [data, ...prev];
-        }
-      });
-    });
-    return () => {
-      socket.off("conversation");
+    const getMessages = async () => {
+      try {
+        const res = await fetch(`/api/message/get/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        });
+        const data = await res.json();
+        setMessages(data);
+      } catch (error) {
+        console.log(error);
+      }
     };
-  }, [conversations, userId]);
+    getMessages();
+  }, [userId]);
+
+  useEffect(() => {
+    socket.on("message", (data) => {
+      setMessages([...messages, data]);
+    });
+  }, [messages]);
 
   return (
     <div className=" bg-secondary rounded-lg px-2">
@@ -86,11 +91,19 @@ export default function Conversations() {
         {conversations && conversations.length > 0 ? (
           conversations.map((conversation, index) => (
             <Link
-              to={`/message/${conversation.receiver}`}
+              to={`/message/${
+                currentUser._id === conversation.receiver
+                  ? conversation.sender
+                  : conversation.receiver
+              }`}
               onClick={() => setUserId(conversation.receiver)}
               key={index}
             >
-              <User conversation={conversation} userId={userId} />
+              <User
+                conversation={conversation}
+                userId={userId}
+                messages={messages}
+              />
             </Link>
           ))
         ) : (

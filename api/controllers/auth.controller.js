@@ -49,8 +49,6 @@ export const signIn = async (req, res, next) => {
       expiresIn: "10h",
     });
 
-    localStorage.setItem("access_token", token);
-
     const { password: pass, ...rest } = validUser._doc;
 
     res

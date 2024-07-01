@@ -94,7 +94,7 @@ export default function Message() {
                     {message.sender === currentUser._id ? (
                       <>
                         <div className="bg-primary p-2 rounded-lg max-w-2/3">
-                          <p className="text-white">{message.text}</p>
+                          <p className="text-white break-all">{message.text}</p>
                         </div>
                         <img
                           src={currentUser.profilePicture}
@@ -110,7 +110,9 @@ export default function Message() {
                           className="w-8 h-8 rounded-full"
                         />
                         <div className="bg-white p-2 rounded-lg max-w-2/3">
-                          <p className="text-primary">{message.text}</p>
+                          <p className="text-primary break-all">
+                            {message.text}
+                          </p>
                         </div>
                       </>
                     )}

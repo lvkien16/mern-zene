@@ -13,7 +13,6 @@ export const sendMessage = async (req, res, next) => {
     const savedMessage = await newMessage.save();
     const io = req.app.get("socketio");
     io.emit("message", savedMessage);
-    io.emit("conversation", savedMessage);
     res.status(201).json(savedMessage);
   } catch (error) {
     next(error);
@@ -69,6 +68,33 @@ export const getConversations = async (req, res, next) => {
     ]);
 
     res.status(200).json(conversations);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getLastMessage = async (req, res, next) => {
+  try {
+    const lastMessage = await Message.findOne({
+      $or: [
+        { sender: req.params.senderId, receiver: req.params.receiverId },
+        { sender: req.params.receiverId, receiver: req.params.senderId },
+      ],
+    }).sort({ createdAt: -1 });
+    res.status(200).json(lastMessage);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getUnreadMessages = async (req, res, next) => {
+  const senderId = req.params.senderId;
+  try {
+    const unreadMessages = await Message.find({
+      sender: senderId,
+      read: false,
+    });
+    res.status(200).json(unreadMessages);
   } catch (error) {
     next(error);
   }

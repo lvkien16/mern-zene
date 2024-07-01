@@ -23,7 +23,7 @@ export default function Comment({ comment }) {
         <div className="flex justify-between gap-3">
           <div>
             <div className="bg-white p-3 rounded-lg">
-              <p className="text-primary break-all">{comment.content}</p>
+              <p className="text-primary ">{comment.content}</p>
             </div>
 
             <div className="text-sm text-gray-500">
