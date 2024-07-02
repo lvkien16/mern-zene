@@ -98,11 +98,13 @@ export default function User({ conversation, userId, messages }) {
           <p
             className={`overflow-hidden text-ellipsis whitespace-nowrap text-sm ${
               lastMessage.read === false &&
-              lastMessage.sender !== currentUser._id &&
-              "font-bold"
+              lastMessage.sender !== currentUser._id
+                ? "font-bold"
+                : ""
             }`}
           >
-            {conversation.sender === currentUser._id && "You: "}
+            {lastMessage.sender === currentUser._id && "You: "}
+            {console.log(currentUser._id, lastMessage.sender)}
             {lastMessage.text}
           </p>
         </div>

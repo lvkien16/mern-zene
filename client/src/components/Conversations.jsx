@@ -50,6 +50,7 @@ export default function Conversations() {
   }, [currentUser._id, userId, messages]);
 
   useEffect(() => {
+    if (!userId) return;
     const getMessages = async () => {
       try {
         const res = await fetch(`/api/message/get/${userId}`, {
@@ -71,6 +72,45 @@ export default function Conversations() {
       setMessages([...messages, data]);
     });
   }, [messages]);
+
+  const handleReadMessage = async () => {
+    try {
+      const res = await fetch(`/api/message/read/${userId}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      });
+      const data = await res.json();
+      setMessages(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (
+      userId &&
+      messages.length > 0 &&
+      messages[messages.length - 1].sender === userId
+    ) {
+      const autoReadMessage = async () => {
+        try {
+          const res = await fetch(`/api/message/read/${userId}`, {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+          });
+          const data = await res.json();
+          setMessages(data);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      autoReadMessage();
+    }
+  }, [userId, messages]);
 
   return (
     <div className=" bg-secondary rounded-lg px-2">
@@ -96,7 +136,10 @@ export default function Conversations() {
                   ? conversation.sender
                   : conversation.receiver
               }`}
-              onClick={() => setUserId(conversation.receiver)}
+              onClick={() => {
+                handleReadMessage();
+                setUserId(conversation.receiver);
+              }}
               key={index}
             >
               <User

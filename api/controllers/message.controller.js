@@ -92,9 +92,32 @@ export const getUnreadMessages = async (req, res, next) => {
   try {
     const unreadMessages = await Message.find({
       sender: senderId,
+      receiver: req.user.id,
       read: false,
     });
     res.status(200).json(unreadMessages);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const readMessages = async (req, res, next) => {
+  const senderId = req.params.senderId;
+  try {
+    const message = await Message.find({
+      sender: senderId,
+      receiver: req.user.id,
+      read: false,
+    });
+
+    message.forEach(async (msg) => {
+      if (msg.sender.toString() === senderId) {
+        msg.read = true;
+        await msg.save();
+      }
+    });
+
+    res.status(200).json({ message: "Messages read" });
   } catch (error) {
     next(error);
   }

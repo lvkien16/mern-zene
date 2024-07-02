@@ -5,6 +5,7 @@ import {
   getLastMessage,
   getMessages,
   getUnreadMessages,
+  readMessages,
   sendMessage,
 } from "../controllers/message.controller.js";
 
@@ -19,5 +20,6 @@ router.get(
   getLastMessage
 );
 router.get("/get/unreadmessages/:senderId", verifyToken, getUnreadMessages);
+router.put("/read/:senderId", verifyToken, readMessages);
 
 export default router;
