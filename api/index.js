@@ -8,6 +8,7 @@ import postRoutes from "./routes/post.route.js";
 import commentRoutes from "./routes/comment.route.js";
 import conversationRoutes from "./routes/conversation.route.js";
 import messageRoutes from "./routes/message.route.js";
+import replycommentRoutes from "./routes/replycomment.route.js";
 import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
@@ -59,6 +60,7 @@ app.use("/api/post", postRoutes);
 app.use("/api/comment", commentRoutes);
 app.use("/api/conversation", conversationRoutes);
 app.use("/api/message", messageRoutes);
+app.use("/api/replycomment", replycommentRoutes);
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;

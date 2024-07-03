@@ -13,7 +13,7 @@ export default function LikeComment({ comment }) {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${currentUser.token}`,
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
       });
       if (res.ok) {

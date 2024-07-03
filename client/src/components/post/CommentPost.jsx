@@ -12,7 +12,7 @@ export default function CommentPost({ post, setComments, setCommentLength }) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${currentUser.token}`,
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
         body: JSON.stringify({
           content: commentContent,
