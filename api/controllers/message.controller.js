@@ -26,6 +26,7 @@ export const getMessages = async (req, res, next) => {
         { sender: req.user.id, receiver: req.params.userId },
         { sender: req.params.userId, receiver: req.user.id },
       ],
+      hidden: { $nin: [req.user.id] },
     }).sort({ createdAt: 1 });
     res.status(200).json(messages);
   } catch (error) {
@@ -80,6 +81,7 @@ export const getLastMessage = async (req, res, next) => {
         { sender: req.params.senderId, receiver: req.params.receiverId },
         { sender: req.params.receiverId, receiver: req.params.senderId },
       ],
+      hidden: { $nin: [req.user.id] },
     }).sort({ createdAt: -1 });
     res.status(200).json(lastMessage);
   } catch (error) {
@@ -117,7 +119,40 @@ export const readMessages = async (req, res, next) => {
       }
     });
 
-    res.status(200).json({ message: "Messages read" });
+    res.status(200).json(message);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const unsendMessage = async (req, res, next) => {
+  try {
+    const message = await Message.findById(req.params.messageId);
+    message.hidden.push(req.user.id);
+    await message.save();
+    res.status(200).json(message);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const unsendMessageForEveryone = async (req, res, next) => {
+  try {
+    const message = await Message.findById(req.params.messageId);
+
+    if (!message) {
+      return res.status(404).json({ error: "Message not found" });
+    }
+
+    await Message.deleteOne({ _id: req.params.messageId });
+
+    const io = req.app.get("socketio");
+    io.emit("unsend", req.params.messageId);
+
+    res.status(200).json({
+      message: "Message deleted successfully",
+      id: req.params.messageId,
+    });
   } catch (error) {
     next(error);
   }

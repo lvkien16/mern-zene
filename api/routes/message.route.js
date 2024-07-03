@@ -7,6 +7,8 @@ import {
   getUnreadMessages,
   readMessages,
   sendMessage,
+  unsendMessage,
+  unsendMessageForEveryone,
 } from "../controllers/message.controller.js";
 
 const router = express.Router();
@@ -21,5 +23,11 @@ router.get(
 );
 router.get("/get/unreadmessages/:senderId", verifyToken, getUnreadMessages);
 router.put("/read/:senderId", verifyToken, readMessages);
+router.put("/unsendforone/:messageId", verifyToken, unsendMessage);
+router.delete(
+  "/unsendforeveryone/:messageId",
+  verifyToken,
+  unsendMessageForEveryone
+);
 
 export default router;

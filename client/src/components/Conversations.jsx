@@ -18,11 +18,9 @@ export default function Conversations() {
 
   useEffect(() => {
     if (location.pathname.startsWith("/message/")) {
-      localStorage.setItem(
-        "userIdForConversation",
-        location.pathname.split("/")[2]
-      );
-      setUserId(location.pathname.split("/")[2]);
+      const userIdFromPath = location.pathname.split("/")[2];
+      localStorage.setItem("userIdForConversation", userIdFromPath);
+      setUserId(userIdFromPath);
     } else {
       localStorage.removeItem("userIdForConversation");
       setUserId("");
@@ -71,6 +69,14 @@ export default function Conversations() {
     socket.on("message", (data) => {
       setMessages([...messages, data]);
     });
+    socket.on("unsend", (id) => {
+      setMessages((prev) => prev.filter((msg) => msg._id !== id));
+    });
+
+    return () => {
+      socket.off("message");
+      socket.off("unsend");
+    };
   }, [messages]);
 
   const handleReadMessage = async () => {
@@ -103,6 +109,7 @@ export default function Conversations() {
             },
           });
           const data = await res.json();
+          console.log("data", data);
           setMessages(data);
         } catch (error) {
           console.log(error);
@@ -113,7 +120,7 @@ export default function Conversations() {
   }, [userId, messages]);
 
   return (
-    <div className=" bg-secondary rounded-lg px-2">
+    <div className="bg-secondary rounded-lg px-2">
       <div className="title py-2 text-center border-b border-primary">
         <h3 className="font-semibold text-primary">Conversations</h3>
       </div>
@@ -136,10 +143,7 @@ export default function Conversations() {
                   ? conversation.sender
                   : conversation.receiver
               }`}
-              onClick={() => {
-                handleReadMessage();
-                setUserId(conversation.receiver);
-              }}
+              onClick={handleReadMessage}
               key={index}
             >
               <User
