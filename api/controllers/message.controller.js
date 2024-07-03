@@ -41,6 +41,7 @@ export const getConversations = async (req, res, next) => {
       {
         $match: {
           $or: [{ sender: userId }, { receiver: userId }],
+          hidden: { $nin: [userId] },
         },
       },
       {
@@ -153,6 +154,31 @@ export const unsendMessageForEveryone = async (req, res, next) => {
       message: "Message deleted successfully",
       id: req.params.messageId,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteConversation = async (req, res, next) => {
+  try {
+    const userId = req.params.userId;
+    const messages = await Message.find({
+      $or: [
+        { sender: userId, receiver: req.user.id },
+        { sender: req.user.id, receiver: userId },
+      ],
+      hidden: { $nin: [req.user.id] },
+    });
+
+    messages.forEach(async (msg) => {
+      msg.hidden.push(req.user.id);
+      await msg.save();
+    });
+
+    const io = req.app.get("socketio");
+    io.emit("deleteConversation", messages);
+
+    res.status(200).json(messages);
   } catch (error) {
     next(error);
   }

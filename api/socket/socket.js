@@ -29,4 +29,25 @@ export const onConnection = (socket, io) => {
       console.log(err);
     }
   });
+
+  socket.on("deleteConversation", async (userId) => {
+    try {
+      const messages = await Message.find({
+        $or: [
+          { sender: userId, receiver: req.user.id },
+          { sender: req.user.id, receiver: userId },
+        ],
+        hidden: { $nin: [req.user.id] },
+      });
+
+      messages.forEach(async (msg) => {
+        msg.hidden.push(req.user.id);
+        await msg.save();
+      });
+
+      io.emit("deleteConversation", messages);
+    } catch (err) {
+      console.log(err);
+    }
+  });
 };

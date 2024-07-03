@@ -2,12 +2,12 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-import userRouter from "./routes/user.route.js";
-import authRouter from "./routes/auth.route.js";
-import postRouter from "./routes/post.route.js";
-import commentRouter from "./routes/comment.route.js";
-import conversationRouter from "./routes/conversation.route.js";
-import messageRouter from "./routes/message.route.js";
+import userRoutes from "./routes/user.route.js";
+import authRoutes from "./routes/auth.route.js";
+import postRoutes from "./routes/post.route.js";
+import commentRoutes from "./routes/comment.route.js";
+import conversationRoutes from "./routes/conversation.route.js";
+import messageRoutes from "./routes/message.route.js";
 import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
@@ -53,12 +53,12 @@ server.listen(3000, () => {
   console.log("Server is running on port 3000!!");
 });
 
-app.use("/api/user", userRouter);
-app.use("/api/auth", authRouter);
-app.use("/api/post", postRouter);
-app.use("/api/comment", commentRouter);
-app.use("/api/conversation", conversationRouter);
-app.use("/api/message", messageRouter);
+app.use("/api/user", userRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/post", postRoutes);
+app.use("/api/comment", commentRoutes);
+app.use("/api/conversation", conversationRoutes);
+app.use("/api/message", messageRoutes);
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;

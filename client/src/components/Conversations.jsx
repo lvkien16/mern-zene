@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { IoMdSearch } from "react-icons/io";
+import { IoMdMore, IoMdSearch } from "react-icons/io";
 import { useSelector } from "react-redux";
 import User from "./conversation/User";
 import { Link, useLocation } from "react-router-dom";
 import io from "socket.io-client";
+import { Dropdown } from "flowbite-react";
 
 const socket = io("http://localhost:3000");
 
@@ -119,6 +120,26 @@ export default function Conversations() {
     }
   }, [userId, messages]);
 
+  const handleDeleteConversation = async (sender, receiver) => {
+    try {
+      const res = await fetch(
+        `/api/message/deleteconversation/${
+          currentUser._id === sender ? receiver : sender
+        }`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      );
+      const data = await res.json();
+      setMessages(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="bg-secondary rounded-lg px-2">
       <div className="title py-2 text-center border-b border-primary">
@@ -137,21 +158,42 @@ export default function Conversations() {
       <div className="conversations mt-2">
         {conversations && conversations.length > 0 ? (
           conversations.map((conversation, index) => (
-            <Link
-              to={`/message/${
-                currentUser._id === conversation.receiver
-                  ? conversation.sender
-                  : conversation.receiver
-              }`}
-              onClick={handleReadMessage}
-              key={index}
-            >
-              <User
-                conversation={conversation}
-                userId={userId}
-                messages={messages}
-              />
-            </Link>
+            <div key={index} className="flex items-center">
+              <Link
+                to={`/message/${
+                  currentUser._id === conversation.receiver
+                    ? conversation.sender
+                    : conversation.receiver
+                }`}
+                onClick={handleReadMessage}
+                className="w-full"
+              >
+                <User
+                  conversation={conversation}
+                  userId={userId}
+                  messages={messages}
+                />
+              </Link>
+              <span className="">
+                <Dropdown
+                  arrowIcon={false}
+                  inline
+                  label={<IoMdMore className={`text-primary text-xl `} />}
+                >
+                  <Dropdown.Item
+                    onClick={() =>
+                      handleDeleteConversation(
+                        conversation.sender,
+                        conversation.receiver
+                      )
+                    }
+                    className="text-primary hover:!bg-primary hover:text-white"
+                  >
+                    Delete
+                  </Dropdown.Item>
+                </Dropdown>
+              </span>
+            </div>
           ))
         ) : (
           <p className="text-primary text-center">No Conversations</p>

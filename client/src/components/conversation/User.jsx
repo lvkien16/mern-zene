@@ -56,7 +56,11 @@ export default function User({ conversation, userId, messages }) {
     const getUnreadMessages = async () => {
       try {
         const res = await fetch(
-          `/api/message/get/unreadmessages/${conversation.receiver}`,
+          `/api/message/get/unreadmessages/${
+            currentUser._id === conversation.sender
+              ? conversation.receiver
+              : conversation.sender
+          }`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -70,7 +74,7 @@ export default function User({ conversation, userId, messages }) {
       }
     };
     getUnreadMessages();
-  }, [conversation.receiver, currentUser._id, messages]);
+  }, [conversation, currentUser._id, messages]);
 
   return (
     <div
@@ -110,7 +114,7 @@ export default function User({ conversation, userId, messages }) {
           </p>
         </div>
       </div>
-      <div className="absolute right-0 ms-auto flex gap-2 unread-messages">
+      <div className="absolute right-0 ms-auto flex gap-1 unread-messages">
         <div
           className={`pr-2 ${
             userId === user._id ? "text-white" : "text-primary"

@@ -1,6 +1,7 @@
 import express from "express";
 import { verifyToken } from "./../utils/verifyUser.js";
 import {
+  deleteConversation,
   getConversations,
   getLastMessage,
   getMessages,
@@ -29,5 +30,6 @@ router.delete(
   verifyToken,
   unsendMessageForEveryone
 );
+router.put("/deleteconversation/:userId", verifyToken, deleteConversation);
 
 export default router;

@@ -50,11 +50,19 @@ export default function Message() {
     socket.on("unsend", (id) => {
       setMessages(messages.filter((message) => message._id !== id));
     });
+    socket.on("deleteConversation", (messages) => {
+      setMessages(
+        messages.filter(
+          (message) => message.sender !== userId && message.receiver !== userId
+        )
+      );
+    });
     return () => {
       socket.off("message");
       socket.off("unsend");
+      socket.off("deleteConversation");
     };
-  }, [messages]);
+  }, [messages, userId]);
 
   useEffect(() => {
     const getMessages = async () => {
