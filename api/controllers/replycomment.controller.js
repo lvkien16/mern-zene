@@ -19,7 +19,10 @@ export const createReplyComment = async (req, res, next) => {
 export const getReplyComments = async (req, res, next) => {
   try {
     const commentId = req.params.commentId;
-    const replyComments = await ReplyComment.find({ commentId });
+    const replyComments = await ReplyComment.find({ commentId }).populate(
+      "userId",
+      "name _id profilePicture"
+    );
 
     res.status(200).json(replyComments);
   } catch (error) {

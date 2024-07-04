@@ -2,14 +2,20 @@ import { Link } from "react-router-dom";
 import LikeComment from "./LikeComment";
 import moment from "moment";
 import { useEffect, useState } from "react";
+import Replies from "./Replies";
 
 export default function Comment({ comment }) {
-  const [showReply, setShowReply] = useState(false);
+  const [showReplyForm, setShowReplyForm] = useState(false);
   const [reply, setReply] = useState(`@${comment.userId.name}`);
   const [replyComments, setReplyComments] = useState([]);
+  const [showReplies, setShowReplies] = useState(false);
 
   const handleReply = () => {
-    setShowReply(!showReply);
+    setShowReplyForm(!showReplyForm);
+  };
+
+  const handleShowReplies = () => {
+    setShowReplies(!showReplies);
   };
 
   const getTimeAgo = (date) => {
@@ -29,6 +35,8 @@ export default function Comment({ comment }) {
       });
       const data = await res.json();
       setReplyComments([...replyComments, data]);
+      setShowReplyForm(false);
+      setReply(`@${comment.userId.name}`);
     } catch (error) {
       console.log(error.message);
     }
@@ -82,7 +90,7 @@ export default function Comment({ comment }) {
               </div>
             </div>
 
-            {showReply && (
+            {showReplyForm && (
               <form
                 className="write-comment flex gap-2 items-center"
                 onSubmit={handleSendReplyComment}
@@ -106,18 +114,30 @@ export default function Comment({ comment }) {
               </form>
             )}
             {replyComments.length > 0 && (
-              <div className="bg-gray-100 p-3 rounded-lg mt-2">
-                {replyComments.map((replyComment) => (
-                  <div key={replyComment._id}>
-                    <p className="text-primary">{replyComment.content}</p>
-                    <div className="flex gap-2 items-center">
-                      <div className="text-sm text-gray-500">
-                        {getTimeAgo(replyComment.createdAt)}
+              <>
+                <button
+                  className="flex  gap-1 items-center font-semibold text-gray-500 hover:text-primary mt-1"
+                  type="button"
+                  onClick={handleShowReplies}
+                >
+                  {showReplies ? "Hide" : "View"} {replyComments.length}{" "}
+                  {replyComments.length > 1 ? "replies" : "reply"}{" "}
+                </button>
+                <div className="">
+                  {showReplies &&
+                    replyComments.map((replyComment) => (
+                      <div key={replyComment._id}>
+                        <Replies
+                          replyComment={replyComment}
+                          getTimeAgo={getTimeAgo}
+                          comment={comment}
+                          setReplyComments={setReplyComments}
+                          replyComments={replyComments}
+                        />
                       </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                    ))}
+                </div>
+              </>
             )}
           </div>
           <div className="flex-col text-center">
