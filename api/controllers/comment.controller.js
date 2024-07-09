@@ -1,5 +1,6 @@
 import Comment from "../models/comment.model.js";
 import Post from "../models/post.model.js";
+import { createNotification } from "./notification.controller.js";
 
 export const createComment = async (req, res, next) => {
   const { postId } = req.params;
@@ -17,7 +18,17 @@ export const createComment = async (req, res, next) => {
       content,
     });
 
+    const post = await Post.findById({ _id: postId });
+
     await newComment.save();
+    if (post.userId !== req.user.id) {
+      createNotification({
+        title: "commented on your post",
+        fromUser: req.user.id,
+        toUser: post.userId,
+        link: `/post/${postId}`,
+      });
+    }
     res.status(201).json(newComment);
   } catch (error) {
     next(error);
@@ -58,8 +69,17 @@ export const likeComment = async (req, res, next) => {
       comment.likes.splice(comment.likes.indexOf(req.user.id), 1);
     } else {
       comment.likes.push(req.user.id);
+      if (req.user.id.toString() !== comment.userId.toString()) {
+        await createNotification({
+          title: "liked your comment",
+          fromUser: req.user.id,
+          toUser: comment.userId,
+          link: `/post/${comment.postId}`,
+        });
+      }
     }
     await comment.save();
+
     res.status(200).json(comment);
   } catch (error) {
     next(error);

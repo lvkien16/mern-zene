@@ -7,6 +7,7 @@ export default function Replies({
   comment,
   setReplyComments,
   replyComments,
+  setAddReply,
 }) {
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [reply, setReply] = useState(`@${replyComment.userId.name}`);
@@ -30,6 +31,7 @@ export default function Replies({
       setReplyComments([...replyComments, data]);
       setShowReplyForm(false);
       setReply(`@${comment.userId.name}`);
+      setAddReply((prev) => !prev);
     } catch (error) {
       console.log(error.message);
     }

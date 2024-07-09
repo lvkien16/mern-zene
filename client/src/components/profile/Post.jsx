@@ -31,7 +31,7 @@ export default function Post({ post }) {
       />
       <Link
         to={`/post/${post._id}`}
-        className="opacity-0 group-hover:opacity-100 transition duration-300 ease-in-out flex items-center border border-primary rounded justify-center bg-gray-200 bg-opacity-90 gap-2 absolute top-0 bottom-0 left-0 right-0 w-full h-full hover:cursor-pointer"
+        className="opacity-0 group-hover:opacity-100 transition duration-700 ease-in-out flex items-center border border-primary rounded justify-center bg-gray-200 bg-opacity-90 gap-2 absolute top-0 bottom-0 left-0 right-0 w-full h-full hover:cursor-pointer"
       >
         <div className="flex items-center text-primary">
           <FaRegHeart className="" />

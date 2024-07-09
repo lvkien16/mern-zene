@@ -58,7 +58,7 @@ function MainApp() {
                 </Route>
               </Routes>
             </div>
-            <div className="md:w-3/12 pl-2 hidden md:block">
+            <div className="md:w-3/12 pr-2 hidden md:block h-screen-header overflow-y-auto">
               {currentUser && <Notifications />}
             </div>
           </div>

@@ -1,4 +1,5 @@
 import Post from "./../models/post.model.js";
+import { createNotification } from "./notification.controller.js";
 
 export const createPost = async (req, res, next) => {
   if (!req.body.content || !req.body.images) {
@@ -66,8 +67,17 @@ export const likePost = async (req, res, next) => {
       post.likes.splice(post.likes.indexOf(req.user.id), 1);
     } else {
       post.likes.push(req.user.id);
+      if (req.user.id !== post.userId) {
+        createNotification({
+          title: "liked your post",
+          fromUser: req.user.id,
+          toUser: post.userId,
+          link: `/post/${post._id}`,
+        });
+      }
     }
     await post.save();
+
     res.status(200).json(post);
   } catch (error) {
     next(error);

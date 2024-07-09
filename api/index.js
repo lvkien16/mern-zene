@@ -9,6 +9,7 @@ import commentRoutes from "./routes/comment.route.js";
 import conversationRoutes from "./routes/conversation.route.js";
 import messageRoutes from "./routes/message.route.js";
 import replycommentRoutes from "./routes/replycomment.route.js";
+import notificationRoutes from "./routes/notification.route.js";
 import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
@@ -41,15 +42,6 @@ app.use(cookieParser());
 
 app.set("socketio", io);
 
-io.on("connection", (socket) => {
-  console.log("Connected");
-  onConnection(socket, io);
-
-  socket.on("disconnect", () => {
-    console.log("Disconnected");
-  });
-});
-
 server.listen(3000, () => {
   console.log("Server is running on port 3000!!");
 });
@@ -61,6 +53,7 @@ app.use("/api/comment", commentRoutes);
 app.use("/api/conversation", conversationRoutes);
 app.use("/api/message", messageRoutes);
 app.use("/api/replycomment", replycommentRoutes);
+app.use("/api/notification", notificationRoutes);
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;

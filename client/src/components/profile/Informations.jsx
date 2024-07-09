@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import Followers from "./Followers";
+import Following from "./Following";
 
 export default function Informations({ userId }) {
   const { currentUser } = useSelector((state) => state.user);
   const [user, setUser] = useState({});
+  const [showFollowers, setShowFollowers] = useState(false);
+  const [showFollowing, setShowFollowing] = useState(false);
 
   const isCurrentUser = currentUser?._id === userId;
 
@@ -21,6 +25,30 @@ export default function Informations({ userId }) {
     getUser();
   }, [userId]);
 
+  const handleFollow = async (id) => {
+    try {
+      const res = await fetch(`/api/user/follow/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      });
+      const data = await res.json();
+      setUser(data);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const handleShowFollowers = () => {
+    setShowFollowers(true);
+  };
+
+  const handleShowFollowing = () => {
+    setShowFollowing(true);
+  };
+
   return (
     <>
       <div className="cover h-52 bg-white rounded-lg"></div>
@@ -36,16 +64,22 @@ export default function Informations({ userId }) {
         </div>
         <div className=" flex items-center gap-3 flex-wrap">
           <div className="flex gap-2">
-            <div className="flex gap-1 justify-center">
-              <p className="text-primary font-bold text-center">10 Posts</p>
-            </div>
-            <div className="flex gap-1 justify-center">
+            <div
+              className="flex gap-1 justify-center"
+              onClick={handleShowFollowers}
+            >
               <p className="text-primary font-bold text-center">
-                10M Followers
+                {user.followers?.length}{" "}
+                {user.followers?.length > 1 ? "Followers" : "Follower"}
               </p>
             </div>
-            <div className="flex gap-1 justify-center">
-              <p className="text-primary font-bold text-center">10 Following</p>
+            <div
+              className="flex gap-1 justify-center"
+              onClick={handleShowFollowing}
+            >
+              <p className="text-primary font-bold text-center">
+                {user.following?.length} Following
+              </p>
             </div>
           </div>
         </div>
@@ -60,8 +94,16 @@ export default function Informations({ userId }) {
           </button>
         ) : (
           <>
-            <button className="border bg-primary text-secondary px-2 py-1 hover:bg-transparent hover:text-primary border-primary rounded-lg">
-              Follow
+            <button
+              type="button"
+              onClick={() => {
+                handleFollow(user._id);
+              }}
+              className="border bg-primary text-secondary px-2 py-1 hover:bg-transparent hover:text-primary border-primary rounded-lg"
+            >
+              {user.followers?.includes(currentUser?._id)
+                ? "Unfollow"
+                : "Follow"}
             </button>
             <Link
               to={`/message/${user._id}`}
@@ -72,6 +114,16 @@ export default function Informations({ userId }) {
           </>
         )}
       </div>
+      <Followers
+        showFollowers={showFollowers}
+        setShowFollowers={setShowFollowers}
+        followers={user.followers}
+      />
+      <Following
+        showFollowing={showFollowing}
+        setShowFollowing={setShowFollowing}
+        following={user.following}
+      />
     </>
   );
 }

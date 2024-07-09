@@ -9,6 +9,7 @@ export default function Comment({ comment }) {
   const [reply, setReply] = useState(`@${comment.userId.name}`);
   const [replyComments, setReplyComments] = useState([]);
   const [showReplies, setShowReplies] = useState(false);
+  const [addReply, setAddReply] = useState(false);
 
   const handleReply = () => {
     setShowReplyForm(!showReplyForm);
@@ -53,7 +54,7 @@ export default function Comment({ comment }) {
       }
     };
     getReplyComments();
-  }, [comment._id]);
+  }, [comment._id, addReply]);
 
   return (
     <>
@@ -125,9 +126,12 @@ export default function Comment({ comment }) {
                 </button>
                 <div className="">
                   {showReplies &&
+                    replyComments.length > 0 &&
                     replyComments.map((replyComment) => (
                       <div key={replyComment._id}>
                         <Replies
+                          addReply={addReply}
+                          setAddReply={setAddReply}
                           replyComment={replyComment}
                           getTimeAgo={getTimeAgo}
                           comment={comment}

@@ -1,4 +1,6 @@
+import Comment from "../models/comment.model.js";
 import ReplyComment from "../models/replycomment.model.js";
+import { createNotification } from "./notification.controller.js";
 
 export const createReplyComment = async (req, res, next) => {
   try {
@@ -8,7 +10,18 @@ export const createReplyComment = async (req, res, next) => {
 
     const replyComment = new ReplyComment({ userId, commentId, content });
 
+    const comment = await Comment.findById({ _id: commentId });
+
     await replyComment.save();
+
+    if (comment.userId.toString() !== req.user.id.toString()) {
+      await createNotification({
+        title: "replied to your comment",
+        fromUser: req.user.id,
+        toUser: comment.userId,
+        link: `/post/${comment.postId}`,
+      });
+    }
 
     res.status(201).json(replyComment);
   } catch (error) {

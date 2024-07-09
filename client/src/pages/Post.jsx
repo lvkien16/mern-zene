@@ -94,7 +94,7 @@ export default function Post() {
           <p className="text-gray-400 text-sm">{getTimeAgo(post.createdAt)}</p>
         </div>
       </div>
-      <div className="my-3">
+      <div className="my-3 text-primary">
         <p>{post.content}</p>
       </div>
       <div className="mt-4">
