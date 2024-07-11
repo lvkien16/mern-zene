@@ -17,6 +17,10 @@ export const onConnection = (socket, io) => {
     }
   });
 
+  socket.on("notification", (Notification) => {
+    io.emit("notification", Notification);
+  });
+
   socket.on("unsend", async (id) => {
     try {
       const message = await Message.findById(req.params.messageId);

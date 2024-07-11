@@ -1,63 +1,50 @@
-import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import CreatePost from "../components/home/CreatePost";
+import { useEffect, useState } from "react";
+import PostsForNewsFeed from "../components/home/PostsForNewsFeed";
+import SuggestUsers from "../components/home/SuggestUsers";
 
 export default function Home() {
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    arrows: false,
-  };
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    const getPosts = async () => {
+      const res = await fetch("/api/home/getposts", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const data = await res.json();
+      setPosts(data);
+    };
+    getPosts();
+  }, []);
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="container mx-auto px-4 pb-10">
       <div className="flex justify-center mt-4">
         <div className="create-a-post py-2 w-full">
           <CreatePost />
         </div>
       </div>
       <div className="newsfeed mt-6">
-        <div className="post rounded-lg overflow-hidden">
-          <div className="post-header flex items-center gap-2">
-            <img
-              src="https://static.vecteezy.com/system/resources/previews/008/442/086/original/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg"
-              alt="User"
-              className="w-10 h-10 rounded-full"
-            />
-            <div>
-              <h4 className="text-primary font-semibold">John Doe</h4>
-              <p className="text-primary text-sm">2 hours ago</p>
+        {posts && posts.length > 0 ? (
+          posts.map((post) => (
+            <div key={post._id} className="newsfeed-post">
+              <PostsForNewsFeed post={post} />
             </div>
+          ))
+        ) : (
+          <div className="text-center text-primary font-semibold">
+            Follow for more posts
           </div>
-          <div className="post-content p-4">
-            <p className="text-primary mb-4">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas
-              voluptate, quae, quidem, iure quos nesciunt voluptatum deserunt
-              impedit doloribus accusamus quibusdam. Quisquam, voluptate
-              voluptatum. Quisquam, voluptate voluptatum.
-            </p>
-            <Slider {...settings}>
-              <div>
-                <img
-                  src="https://www.harboroughmail.co.uk/webimg/T0FLMTIzNzA0NzMw.jpg"
-                  alt="Slide 1"
-                  className="w-full"
-                />
-              </div>
-              <div>
-                <img
-                  src="https://www.harboroughmail.co.uk/webimg/T0FLMTIzNzA0NzMw.jpg"
-                  alt="Slide 2"
-                  className="w-full"
-                />
-              </div>
-            </Slider>
-          </div>
-        </div>
+        )}
+      </div>
+      <div className="suggest-users">
+        <SuggestUsers />
       </div>
     </div>
   );

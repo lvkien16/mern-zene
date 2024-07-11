@@ -29,11 +29,17 @@ export default function Notifications() {
         Notifications
       </div>
       <div className="notifications">
-        {notifications.map((notification) => (
-          <div key={notification._id} className="notification">
-            <Notification notification={notification} />
+        {notifications && notifications.length > 0 ? (
+          notifications.map((notification) => (
+            <div key={notification._id} className="notification">
+              <Notification notification={notification} />
+            </div>
+          ))
+        ) : (
+          <div className="text-center text-primary font-semibold">
+            No notifications
           </div>
-        ))}
+        )}
       </div>
     </div>
   );

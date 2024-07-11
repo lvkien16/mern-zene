@@ -29,6 +29,7 @@ export const createComment = async (req, res, next) => {
         link: `/post/${postId}`,
       });
     }
+    const io = req.app.get("io");
     res.status(201).json(newComment);
   } catch (error) {
     next(error);

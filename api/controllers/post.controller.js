@@ -39,7 +39,7 @@ export const getPost = async (req, res, next) => {
 export const getPosts = async (req, res, next) => {
   const { userId } = req.params;
   try {
-    const posts = await Post.find({ userId });
+    const posts = await Post.find({ userId }).sort({ createdAt: -1 });
     if (!posts) {
       return res.status(404).json({
         success: false,

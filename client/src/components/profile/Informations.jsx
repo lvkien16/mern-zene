@@ -65,7 +65,7 @@ export default function Informations({ userId }) {
         <div className=" flex items-center gap-3 flex-wrap">
           <div className="flex gap-2">
             <div
-              className="flex gap-1 justify-center"
+              className="flex gap-1 justify-center hover:cursor-pointer"
               onClick={handleShowFollowers}
             >
               <p className="text-primary font-bold text-center">
@@ -74,7 +74,7 @@ export default function Informations({ userId }) {
               </p>
             </div>
             <div
-              className="flex gap-1 justify-center"
+              className="flex gap-1 justify-center hover:cursor-pointer"
               onClick={handleShowFollowing}
             >
               <p className="text-primary font-bold text-center">

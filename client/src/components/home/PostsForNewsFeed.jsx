@@ -1,56 +1,35 @@
-import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
 import moment from "moment";
-import Slider from "react-slick";
-import { FiShare2 } from "react-icons/fi";
+import { useEffect, useState } from "react";
 import { FaRegComment } from "react-icons/fa";
-import LikePost from "../components/post/LikePost";
-import CommentPost from "../components/post/CommentPost";
-import Comment from "../components/post/Comment";
+import { FiShare2 } from "react-icons/fi";
+import { Link, useNavigate } from "react-router-dom";
+import Slider from "react-slick";
+import LikePost from "../post/LikePost";
 
-export default function Post() {
-  const { postId } = useParams();
-  const [post, setPost] = useState({});
+export default function PostsForNewsFeed({ post }) {
   const [user, setUser] = useState({});
-  const [showWriteComment, setShowWriteComment] = useState(false);
   const [comments, setComments] = useState([]);
-  const [commentLength, setCommentLength] = useState(0 || comments.length);
-
-  const settings = {
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    arrows: false,
-  };
-
-  const getTimeAgo = (date) => {
-    return moment(date).fromNow();
-  };
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const getPost = async () => {
-      try {
-        const res = await fetch(`/api/post/getpost/${postId}`);
-        const data = await res.json();
-        if (!res.ok) {
-          return;
-        }
-        setPost(data);
-      } catch (error) {
-        console.error("Error fetching post:", error);
-      }
+    const getUser = async () => {
+      const res = await fetch(`/api/user/getuser/${post.userId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const data = await res.json();
+      setUser(data);
     };
-
-    if (postId) {
-      getPost();
-    }
-  }, [postId, comments]);
+    getUser();
+  }, [post.userId]);
 
   useEffect(() => {
     const getComments = async () => {
       try {
-        const res = await fetch(`/api/comment/getcomments/${postId}`);
+        const res = await fetch(`/api/comment/getcomments/${post._id}`);
         const data = await res.json();
         if (!res.ok) {
           return;
@@ -61,24 +40,28 @@ export default function Post() {
       }
     };
     getComments();
-  }, [postId, commentLength]);
+  }, [post._id]);
 
-  useEffect(() => {
-    if (post.userId) {
-      const getUser = async () => {
-        const res = await fetch(`/api/user/getuser/${post.userId}`);
-        const data = await res.json();
-        if (!res.ok) {
-          return;
-        }
-        setUser(data);
-      };
-      getUser();
-    }
-  }, [post.userId]);
+  const getTimeAgo = (date) => {
+    return moment(date).fromNow();
+  };
+
+  const handleCommentPost = () => {
+    navigate(`/post/${post._id}`);
+  };
+
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    arrows: false,
+  };
+
   return (
-    <div className="p-2">
-      <div className="flex gap-2 items-center">
+    <div className="p-2 bg-white rounded-lg mb-3">
+      <div className="flex gap-2 items-center ">
         <img
           src={user.profilePicture}
           alt=""
@@ -106,7 +89,7 @@ export default function Post() {
                   <img
                     src={image}
                     alt=""
-                    className="w-full h-80 sm:h-96 object-cover"
+                    className="w-full h-96 object-cover"
                   />
                   <span className="absolute top-0 right-0 px-2 bg-gray-100 text-primary border-l border-b border-secondary font-semibold">
                     {index + 1}/{post.images.length}
@@ -124,10 +107,10 @@ export default function Post() {
           />
         )}
       </div>
-      <div className="functions flex justify-between mb-3 border-b border-primary">
+      <div className="functions flex justify-between mb-3 mt-5">
         <LikePost post={post} />
         <div
-          onClick={() => setShowWriteComment(true)}
+          onClick={handleCommentPost}
           className="text-primary w-full py-3 hover:bg-gray-300 hover:cursor-pointer flex gap-2 items-center px-3"
         >
           <FaRegComment className="" />
@@ -136,22 +119,6 @@ export default function Post() {
         <div className="w-full py-3 hover:bg-gray-300 hover:cursor-pointer flex gap-2 items-center px-3">
           <FiShare2 className="text-primary" />
         </div>
-      </div>
-      <div className={`${showWriteComment ? "block" : "hidden"}`}>
-        <CommentPost
-          post={post}
-          setComments={setComments}
-          setCommentLength={setCommentLength}
-        />
-      </div>
-      <div className="mt-4 ">
-        {comments.map((comment) => (
-          <div key={comment._id}>
-            <div className="comment flex-shrink-0 flex mb-5 gap-2">
-              <Comment comment={comment} />
-            </div>
-          </div>
-        ))}
       </div>
     </div>
   );

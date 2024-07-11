@@ -10,6 +10,7 @@ import conversationRoutes from "./routes/conversation.route.js";
 import messageRoutes from "./routes/message.route.js";
 import replycommentRoutes from "./routes/replycomment.route.js";
 import notificationRoutes from "./routes/notification.route.js";
+import homeRoutes from "./routes/home.route.js";
 import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
@@ -41,6 +42,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.set("socketio", io);
+io.on("connection", onConnection);
 
 server.listen(3000, () => {
   console.log("Server is running on port 3000!!");
@@ -54,6 +56,7 @@ app.use("/api/conversation", conversationRoutes);
 app.use("/api/message", messageRoutes);
 app.use("/api/replycomment", replycommentRoutes);
 app.use("/api/notification", notificationRoutes);
+app.use("/api/home", homeRoutes);
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;

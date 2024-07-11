@@ -7,6 +7,7 @@ export const createNotification = async ({ title, fromUser, toUser, link }) => {
     toUser: toUser,
     link,
   });
+
   return notification.save();
 };
 

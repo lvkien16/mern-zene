@@ -24,7 +24,7 @@ export default function Header() {
   };
   return (
     <div className="flex items-center justify-between py-3 mb-4">
-      <Link to="/" className="logo">
+      <Link to="/" className="logo font-bold text-primary">
         ZENE
       </Link>
       <div className="search flex gap-2">
