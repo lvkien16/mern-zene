@@ -15,6 +15,7 @@ import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
 import { onConnection } from "./socket/socket.js";
+import path from "path";
 
 dotenv.config();
 
@@ -26,6 +27,8 @@ mongoose
   .catch((err) => {
     console.log("Failed to connect to MongoDB!!", err);
   });
+
+const __dirname = path.resolve();
 
 const app = express();
 const server = http.createServer(app);
@@ -57,6 +60,12 @@ app.use("/api/message", messageRoutes);
 app.use("/api/replycomment", replycommentRoutes);
 app.use("/api/notification", notificationRoutes);
 app.use("/api/home", homeRoutes);
+
+app.use(express.static(path.join(__dirname, "/client/dist")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
+});
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
