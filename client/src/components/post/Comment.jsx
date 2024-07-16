@@ -4,9 +4,10 @@ import moment from "moment";
 import { useEffect, useState } from "react";
 import Replies from "./Replies";
 
-export default function Comment({ comment }) {
+export default function Comment({ comment, setCommentLength }) {
   const [showReplyForm, setShowReplyForm] = useState(false);
-  const [reply, setReply] = useState(`@${comment.userId.name}`);
+  const [user, setUser] = useState({});
+  const [reply, setReply] = useState(`@${user.name}`);
   const [replyComments, setReplyComments] = useState([]);
   const [showReplies, setShowReplies] = useState(false);
   const [addReply, setAddReply] = useState(false);
@@ -26,22 +27,44 @@ export default function Comment({ comment }) {
   const handleSendReplyComment = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`/api/replycomment/reply/${comment._id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-        body: JSON.stringify({ content: reply }),
-      });
+      const res = await fetch(
+        `/api/replycomment/reply/${comment._id}/${comment.postId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          body: JSON.stringify({ content: reply }),
+        }
+      );
       const data = await res.json();
       setReplyComments([...replyComments, data]);
       setShowReplyForm(false);
       setReply(`@${comment.userId.name}`);
+      setCommentLength((prev) => prev + 1);
     } catch (error) {
       console.log(error.message);
     }
   };
+
+  useEffect(() => {
+    const getUser = async () => {
+      try {
+        const res = await fetch(`/api/user/getuser/${comment.userId._id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        });
+        const data = await res.json();
+        setReply(`@${data.name}` + " ");
+        setUser(data);
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    getUser();
+  }, [comment.userId._id]);
 
   useEffect(() => {
     const getReplyComments = async () => {
@@ -59,16 +82,16 @@ export default function Comment({ comment }) {
   return (
     <>
       <img
-        src={comment.userId.profilePicture}
+        src={user.profilePicture}
         alt=""
         className="w-12 h-12 object-cover rounded-full border"
       />
       <div className="flex-grow">
         <Link
-          to={`/profile/${comment.userId._id}`}
+          to={`/profile/${user._id}`}
           className="font-semibold text-primary"
         >
-          {comment.userId.name}
+          {user.name}
         </Link>
         <div className="flex justify-between gap-3">
           <div>
@@ -130,6 +153,7 @@ export default function Comment({ comment }) {
                     replyComments.map((replyComment) => (
                       <div key={replyComment._id}>
                         <Replies
+                          setCommentLength={setCommentLength}
                           addReply={addReply}
                           setAddReply={setAddReply}
                           replyComment={replyComment}

@@ -3,8 +3,11 @@ import mongoose from "mongoose";
 const replyCommentSchema = new mongoose.Schema(
   {
     userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      type: String,
+      required: true,
+    },
+    postId: {
+      type: String,
       required: true,
     },
     commentId: {

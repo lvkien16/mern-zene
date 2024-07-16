@@ -14,7 +14,10 @@ export default function Post() {
   const [user, setUser] = useState({});
   const [showWriteComment, setShowWriteComment] = useState(false);
   const [comments, setComments] = useState([]);
-  const [commentLength, setCommentLength] = useState(0 || comments.length);
+  const [replyComments, setReplyComments] = useState([]);
+  const [commentLength, setCommentLength] = useState(
+    0 || comments.length + replyComments.length
+  );
 
   const settings = {
     infinite: true,
@@ -64,6 +67,22 @@ export default function Post() {
   }, [postId, commentLength]);
 
   useEffect(() => {
+    const getReplyComments = async () => {
+      try {
+        const res = await fetch(`/api/replycomment/getbypostid/${postId}`);
+        const data = await res.json();
+        setReplyComments(data);
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    getReplyComments();
+  }, [postId, commentLength]);
+
+  console.log(comments);
+  console.log(replyComments);
+
+  useEffect(() => {
     if (post.userId) {
       const getUser = async () => {
         const res = await fetch(`/api/user/getuser/${post.userId}`);
@@ -76,6 +95,7 @@ export default function Post() {
       getUser();
     }
   }, [post.userId]);
+
   return (
     <div className="p-2">
       <div className="flex gap-2 items-center">
@@ -131,7 +151,13 @@ export default function Post() {
           className="text-primary w-full py-3 hover:bg-gray-300 hover:cursor-pointer flex gap-2 items-center px-3"
         >
           <FaRegComment className="" />
-          <span>{comments ? comments.length : 0}</span>
+          <span>
+            {comments &&
+              replyComments &&
+              comments.length + replyComments.length}
+            {comments && !replyComments && comments.length}
+            {!comments && replyComments && replyComments.length}
+          </span>
         </div>
         <div className="w-full py-3 hover:bg-gray-300 hover:cursor-pointer flex gap-2 items-center px-3">
           <FiShare2 className="text-primary" />
@@ -148,7 +174,7 @@ export default function Post() {
         {comments.map((comment) => (
           <div key={comment._id}>
             <div className="comment flex-shrink-0 flex mb-5 gap-2">
-              <Comment comment={comment} />
+              <Comment comment={comment} setCommentLength={setCommentLength} />
             </div>
           </div>
         ))}
